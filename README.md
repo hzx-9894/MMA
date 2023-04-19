@@ -4,7 +4,12 @@
 
 Our code can run in the following environments:
 
-``` Python 3.6.13
+``` 
+Ubuntu 18.04.1
+
+cuda 10.2
+
+Python 3.6.13
 
 PyTorch 1.4.0
 
