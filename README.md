@@ -49,7 +49,7 @@ CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --master_port 1234 -
 ### BRM-MA
 
 ```
-CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --master_port 1234 --nproc_per_node 3 train_GF_WSB_MA.py --num_point 50000 --num_decoder_layers 2 --size_delta 0.111111111111 --center_delta 0.04 --learning_rate 0.004 --decoder_learning_rate 0.0004 --weight_decay 0.0005 --dataset scannet --log_dir log_BR --optimizer adan --max_epoch 300 --batch_size 4
+CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --master_port 1234 --nproc_per_node 3 train_GF_BR_MA.py --num_point 50000 --num_decoder_layers 2 --size_delta 0.111111111111 --center_delta 0.04 --learning_rate 0.004 --decoder_learning_rate 0.0004 --weight_decay 0.0005 --dataset scannet --log_dir log_BR --optimizer adan --max_epoch 300 --batch_size 4
 
 ```
 
