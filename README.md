@@ -37,7 +37,7 @@ The final data organization shoule be:
 
 ## Run
 
-### GF3D-MA for Fully-supervised detection
+### GF3D-MA for Fully-supervised Detection
 
 ```
 
@@ -53,7 +53,7 @@ CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --master_port 1234 -
 
 ```
 
-### GF3D-MA for Weakly-supervised detection
+### GF3D-MA for Weakly-supervised Detection
 
 ```
 CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --master_port 1234 --nproc_per_node 2 train_GF_WSB_MA.py --num_point 50000 --num_decoder_layers 2 --size_delta 0.111111111111 --center_delta 0.04 --learning_rate 0.004 --decoder_learning_rate 0.0004 --weight_decay 0.0005 --dataset scannet --log_dir log_WSB --max_epoch 300 --batch_size 4
