@@ -18,7 +18,7 @@ plyfile 0.7.4
 
 ```
 
-The [Matterport3D](https://niessner.github.io/Matterport/) and [ScanNet](http://www.scan-net.org/) datasets can be downloaded from their official websites and processed using [BR](https://github.com/xuxw98/BackToReality)'s [data generation](https://github.com/xuxw98/BackToReality/tree/main/data_generation). Alternatively, you can also download the preprocessed datasets provided by BR directly.
+The [Matterport3D](https://niessner.github.io/Matterport/) and [ScanNet](http://www.scan-net.org/) datasets can be downloaded from their official websites and processed using [BR](https://github.com/xuxw98/BackToReality)'s [data generation](https://github.com/xuxw98/BackToReality/tree/main/data_generation). Alternatively, you can also download the preprocessed datasets provided by BR directly:[ScanNet](https://drive.google.com/drive/folders/1hKjYXdHIpk8a1IPG_k4WmFacSPlfTYwZ),[Matterport](https://drive.google.com/drive/folders/166w4w9xa8c7WITDAGswEsDQ8cJxBJomn).
 
 The final data organization shoule be:
 * Mixed-Attention
