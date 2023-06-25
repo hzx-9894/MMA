@@ -118,50 +118,7 @@ class Pointnet2Backbone(nn.Module):
             use_xyz=True,
             normalize_xyz=True
         )
-        
-        # 2D Attentions: 
 
-        # Non-local
-        #self.nl1 = NonLocalModule(128)
-        #self.nl2 = NonLocalModule(256)
-        #self.nl3 = NonLocalModule(256)
-        #self.nl4 = NonLocalModule(256)
-        #self.nl5 = NonLocalModule(256)
-        #self.nl6 = NonLocalModule(256)
-
-        # Criss-cross
-        # self.cc1 = CrissCrossAttention(128)
-        # self.cc2 = CrissCrossAttention(256)
-        # self.cc3 = CrissCrossAttention(256)
-        # self.cc4 = CrissCrossAttention(256)
-        # self.cc5 = CrissCrossAttention(256)
-        # self.cc6 = CrissCrossAttention(256)
-
-        # SE
-        # self.se1 = SE(128)
-        # self.se2 = SE(256)
-        # self.se3 = SE(256)
-        # self.se4 = SE(256)
-        # self.se5 = SE(256)
-        # self.se6 = SE(256)
-
-
-        # CBAM (channel and spatial attention)
-        # self.cbam_ca1 = ChannelAttentionModule(128)
-        # self.cbam_ca2 = ChannelAttentionModule(256)
-        # self.cbam_ca3 = ChannelAttentionModule(256)
-        # self.cbam_ca4 = ChannelAttentionModule(256)
-        # self.cbam_ca5 = ChannelAttentionModule(256)
-        # self.cbam_ca6 = ChannelAttentionModule(256)
-
-        # self.cbam_sa1 = SpatialAttentionModule()
-        # self.cbam_sa2 = SpatialAttentionModule()
-        # self.cbam_sa3 = SpatialAttentionModule()
-        # self.cbam_sa4 = SpatialAttentionModule()
-        # self.cbam_sa5 = SpatialAttentionModule()
-        # self.cbam_sa6 = SpatialAttentionModule()
-
-        # Dual-attention 
         # self.cam1 = CAM(128)
         # self.cam2 = CAM(256)
         # self.cam3 = CAM(256)
@@ -176,9 +133,7 @@ class Pointnet2Backbone(nn.Module):
         # self.pam5 = PAM(256)
         # self.pam6 = PAM(256)
 
-        # 3D attentions:
 
-        # A-SCN
         # self.sc1 = ShapeContext(128)
         # self.sc2 = ShapeContext(256)
         # self.sc3 = ShapeContext(256)
@@ -186,7 +141,6 @@ class Pointnet2Backbone(nn.Module):
         # self.sc5 = ShapeContext(256)
         # self.sc6 = ShapeContext(256)
 
-        # Point-Attention
         # self.pa1 = PointAttentionNetwork(128)
         # self.pa2 = PointAttentionNetwork(256)
         # self.pa3 = PointAttentionNetwork(256)
@@ -194,7 +148,6 @@ class Pointnet2Backbone(nn.Module):
         # self.pa5 = PointAttentionNetwork(256)
         # self.pa6 = PointAttentionNetwork(256)
 
-        # Channel-Affinity Attention
         # self.caa1 = CAA_Module(128, 2048)
         # self.caa2 = CAA_Module(256, 1024)
         # self.caa3 = CAA_Module(256, 512)
@@ -202,19 +155,12 @@ class Pointnet2Backbone(nn.Module):
         # self.caa5 = CAA_Module(256, 512)
         # self.caa6 = CAA_Module(256, 1024)
 
-        # Offset-Attention
-        #self.oa1 = OffsetAttention(128)
-        #self.oa2 = OffsetAttention(256)
-        self.oa3 = OffsetAttention(256)
-        self.oa4 = OffsetAttention(256)
-        #self.oa5 = OffsetAttention(256)
-        #self.oa6 = OffsetAttention(288)
 
-        # Point Transformer
-        self.pt1 = Point_Transformer(128)
-        self.pt2 = Point_Transformer(256)
-        #self.pt3 = Point_Transformer(256)
-        #self.pt4 = Point_Transformer(256)
+        self.os3 = Offset_Transformer(256)
+        self.os4 = Offset_Transformer(256)
+
+        self.ne1 = Neighbour_Transformer(128)
+        self.ne2 = Neighbour_Transformer(256)
         
         self.fp1 = PointnetFPModule(mlp=[256 * width + 256 * width, 256 * width, 256 * width])
         self.fp2 = PointnetFPModule(mlp=[256 * width + 256 * width, 256 * width, 288])
@@ -254,75 +200,53 @@ class Pointnet2Backbone(nn.Module):
 
         # --------- 4 SET ABSTRACTION LAYERS ---------
         xyz, features, fps_inds = self.sa1(xyz, features)
-        
-        #features = self.nl1(features)
-        # features = self.se1(features)
-        # features = self.cbam_ca1(features)
-        # features = self.cbam_sa1(features)
+
         # features = self.cam1(features) + self.pam1(features)
         # features = self.cc1(features)
         # features = self.caa1(features)
         # features = self.sc1(features)
         # features = self.pa1(features)
-        #features = self.oa1(features)
         xyz1_trans = xyz.transpose(2, 1).contiguous()
-        features = self.pt1(xyz1_trans, features, 20) + features
+        features = self.ne1(xyz1_trans, features, 20) + features
                 
         end_points['sa1_inds'] = fps_inds
         end_points['sa1_xyz'] = xyz
         end_points['sa1_features'] = features
 
         xyz, features, fps_inds = self.sa2(xyz, features)  # this fps_inds is just 0,1,...,1023
-        
-        #features = self.nl2(features)
-        # features = self.se2(features)
-        # features = self.cbam_ca2(features)
-        # features = self.cbam_sa2(features)
+
         # features = self.cam2(features) + self.pam2(features)
         # features = self.cc2(features)
         # features = self.caa2(features)
         # features = self.sc2(features)
         # features = self.pa2(features)
-        #features = self.oa2(features)
         xyz2_trans = xyz.transpose(2, 1).contiguous()
-        features = self.pt2(xyz2_trans, features, 20) + features
+        features = self.ne2(xyz2_trans, features, 20) + features
         
         end_points['sa2_inds'] = fps_inds
         end_points['sa2_xyz'] = xyz
         end_points['sa2_features'] = features
 
         xyz, features, fps_inds = self.sa3(xyz, features)  # this fps_inds is just 0,1,...,511
-        
-        #features = self.nl3(features)
-        # features = self.se3(features)
-        # features = self.cbam_ca3(features)
-        # features = self.cbam_sa3(features)
+
         # features = self.cam3(features) + self.pam3(features)
         # features = self.cc3(features)
         # features = self.caa3(features)
         # features = self.sc3(features)
         # features = self.pa3(features)
-        features = self.oa3(features)
-        #xyz3_trans = xyz.transpose(2, 1).contiguous()
-        #features = self.pt3(xyz3_trans, features, 10) + features        
+        features = self.os3(features)
         
         end_points['sa3_xyz'] = xyz
         end_points['sa3_features'] = features
 
         xyz, features, fps_inds = self.sa4(xyz, features)  # this fps_inds is just 0,1,...,255
-        
-        #features = self.nl4(features)
-        # features = self.se4(features)
-        # features = self.cbam_ca4(features)
-        # features = self.cbam_sa4(features)
+
         # features = self.cam4(features) + self.pam4(features)
         # features = self.cc4(features)
         # features = self.caa4(features)
         # features = self.sc4(features)
         # features = self.pa4(features)
-        features = self.oa4(features)
-        #xyz4_trans = xyz.transpose(2, 1).contiguous()
-        #features = self.pt4(xyz4_trans, features, 10) + features
+        features = self.os4(features)
         
         end_points['sa4_xyz'] = xyz
         end_points['sa4_features'] = features
@@ -414,13 +338,7 @@ class Pointnet2Backbone_jitter(nn.Module):
             use_xyz=True,
             normalize_xyz=True
         )
-        
-        self.oa1 = OffsetAttention(128)
-        self.oa2 = OffsetAttention(256)
-        self.oa3 = OffsetAttention(256)
-        self.oa4 = OffsetAttention(256)
-        self.oa5 = OffsetAttention(256)
-        self.oa6 = OffsetAttention(288)
+
         
         self.fp1 = PointnetFPModule(mlp=[256 * width + 256 * width, 256 * width, 256 * width])
         self.fp2 = PointnetFPModule(mlp=[256 * width + 256 * width, 256 * width, 288])
@@ -468,31 +386,26 @@ class Pointnet2Backbone_jitter(nn.Module):
 
         # --------- 4 SET ABSTRACTION LAYERS ---------
         xyz, features, fps_inds = self.sa1(xyz, features)
-        
-        features = self.oa1(features)
+
         
         end_points['sa1_inds'] = fps_inds
         end_points['sa1_xyz'] = xyz
         end_points['sa1_features'] = features
 
         xyz, features, fps_inds = self.sa2(xyz, features)  # this fps_inds is just 0,1,...,1023
-        
-        features = self.oa2(features)        
+
         
         end_points['sa2_inds'] = fps_inds
         end_points['sa2_xyz'] = xyz
         end_points['sa2_features'] = features
 
         xyz, features, fps_inds = self.sa3(xyz, features)  # this fps_inds is just 0,1,...,511
-        
-        features = self.oa3(features)        
-        
+
+
         end_points['sa3_xyz'] = xyz
         end_points['sa3_features'] = features
 
         xyz, features, fps_inds = self.sa4(xyz, features)  # this fps_inds is just 0,1,...,255
-        
-        features = self.oa4(features)        
         
         end_points['sa4_xyz'] = xyz
         end_points['sa4_features'] = features
@@ -500,12 +413,9 @@ class Pointnet2Backbone_jitter(nn.Module):
         # --------- 2 FEATURE UPSAMPLING LAYERS --------
         features = self.fp1(end_points['sa3_xyz'], end_points['sa4_xyz'], end_points['sa3_features'],
                             end_points['sa4_features'])
-                            
-        features = self.oa5(features)                            
+
                             
         features = self.fp2(end_points['sa2_xyz'], end_points['sa3_xyz'], end_points['sa2_features'], features)
-        
-        features = self.oa6(features)        
         
         end_points['fp2_features'] = features
         end_points['fp2_xyz'] = end_points['sa2_xyz']
@@ -660,9 +570,9 @@ class Pointnet2BackboneWithSem(nn.Module):
 
         return end_points
 
-class OffsetAttention(nn.Module):
+class Offset_Transformer(nn.Module):
     def __init__(self, channels, ratio = 8):
-        super(OffsetAttention, self).__init__()
+        super(Offset_Transformer, self).__init__()
 
         self.bn1 = nn.BatchNorm1d(channels // ratio)
         self.bn2 = nn.BatchNorm1d(channels // ratio)
@@ -925,9 +835,9 @@ class SpatialAttentionModule(nn.Module):
 
 
 
-class Point_Transformer(nn.Module):
+class Neighbour_Transformer(nn.Module):
     def __init__(self, input_features_dim):
-        super(Point_Transformer, self).__init__()
+        super(Neighbour_Transformer, self).__init__()
 
         self.conv_theta1 = nn.Conv2d(3, input_features_dim, 1)
         self.conv_theta2 = nn.Conv2d(input_features_dim, input_features_dim, 1)
