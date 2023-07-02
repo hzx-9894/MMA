@@ -1,4 +1,4 @@
-# MA:Mixed Attention Backbone towards 3D Weakly-supervised Detection  
+# MAFM:Multi-scale Attention Fusion Module  
 
 ## Preparation
 
