@@ -1,4 +1,4 @@
-# MAFM:Multi-scale Attention Fusion Module  
+# MMA:Mixed Multi-scale Attention Module  
 
 ## Preparation
 
